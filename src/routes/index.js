@@ -16,7 +16,7 @@ export default function Routes(){
             }}
             />
             <Stack.Screen
-            name="Carte"
+            name="Cart"
             component={Cart}
             options={{
                 headerTitle: "Meu Carrinho"

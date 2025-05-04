@@ -1,9 +1,14 @@
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, SafeAreaView } from "react-native";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import Products from "../../components/Products";
 
+import { useNavigation } from "@react-navigation/native";
+import { CartContext } from "../../contexts/CartContext";
 
 export default function Home() {
+    const { cart, addItemCart } = useContext(CartContext);
+    const navigation = useNavigation();
     const [products, setProducts] = useState([
         {
             id: '1',
@@ -32,17 +37,35 @@ export default function Home() {
         },
     ])
 
+    function handleAddCart(item){
+        addItemCart(item)
+    }
+
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.cartContent}>
                 <Text style={styles.title}>Lista de Produtos</Text>
-                <TouchableOpacity style={styles.cartButton}>
+
+                <TouchableOpacity style={styles.cartButton}
+                    onPress={() => navigation.navigate("Cart")}
+                >
                     <View style={styles.dot}>
-                        <Text style={styles.dotText}>3</Text>
+                        <Text style={styles.dotText}>
+                            {cart?.length}
+                        </Text>
                     </View>
                     <FontAwesome name="shopping-cart" size={30} color="#000" />
                 </TouchableOpacity>
             </View>
+
+            <FlatList
+                style={styles.item}
+                data={products}
+                keyExtractor={(item) => String(item.id)}
+                renderItem={({ item }) => <Products data={item} addToCart={() => handleAddCart(item)} />}
+                
+            />
+
         </SafeAreaView>
     )
 }

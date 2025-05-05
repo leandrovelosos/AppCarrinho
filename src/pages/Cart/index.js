@@ -11,7 +11,7 @@ export default function Cart() {
                 data={cart}
                 showsVerticalScrollIndicator={false}
                 keyExtractor={(item) => String(item.id)}
-                ListEmptyComponent={() => <Text>Carrinho Vazio</Text>}
+                ListEmptyComponent={() => <View style={styles.box}><Text style={styles.cartvazio}>Carrinho Vazio</Text></View>}
                 renderItem={({ item }) => (
                     <CardItem
                         data={item}
@@ -19,9 +19,13 @@ export default function Cart() {
                         removeAmount={() => removeItemCart(item)}
                     />
                 )}
-                ListFooterComponent={() => <Text style={styles.total}>Total: R$ {total}</Text>}
+                ListFooterComponent={() =>
+                    cart.length > 0 ? (
+                        <View style={styles.box}><Text style={styles.total}>Total: R$ {total}</Text></View>
+                    ) : null
+                }
             />
-            
+
         </View>
     )
 }
@@ -34,9 +38,20 @@ const styles = StyleSheet.create({
         paddingEnd: 14,
         paddingTop: 14
     },
-    total:{
-        fontSize: 18,
+    total: {
+        fontSize: 22,
         fontWeight: "bold",
         marginBottom: 24,
+        marginTop: 12
+    },
+    cartvazio: {
+        fontSize: 22,
+        fontWeight: "bold",
+        marginBottom: 24,
+        marginTop: 24
+
+    },
+    box: {
+        alignItems: "center"
     }
 })

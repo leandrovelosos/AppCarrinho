@@ -1,44 +1,43 @@
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, SafeAreaView } from "react-native";
-import { useState, useContext } from "react";
+import { useState, useEffect, useContext } from "react";
+import { View, Text, FlatList, StyleSheet, SafeAreaView, TouchableOpacity, ActivityIndicator } from "react-native";
+import axios from "axios";
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Products from "../../components/Products";
-
 import { useNavigation } from "@react-navigation/native";
 import { CartContext } from "../../contexts/CartContext";
 
 export default function Home() {
     const { cart, addItemCart } = useContext(CartContext);
     const navigation = useNavigation();
-    const [products, setProducts] = useState([
-        {
-            id: '1',
-            name: "Coca cola",
-            price: 19.90
-        },
-        {
-            id: '2',
-            name: "Chocolate",
-            price: 6.50
-        },
-        {
-            id: '4',
-            name: "Queijo 500g",
-            price: 15
-        },
-        {
-            id: '5',
-            name: "Batata frita",
-            price: 23.90
-        },
-        {
-            id: '6',
-            name: "Guarana lata",
-            price: 6.00
-        },
-    ])
 
-    function handleAddCart(item){
-        addItemCart(item)
+    const [products, setProducts] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        async function loadProducts() {
+            try {
+                const response = await axios.get("https://fakestoreapi.com/products");
+                // Adaptar a estrutura para seu app
+                const mappedProducts = response.data.map(item => ({
+                    id: String(item.id),
+                    name: item.title,
+                    price: item.price,
+                    image: item.image
+                   
+                }));
+                setProducts(mappedProducts);
+            } catch (error) {
+                console.error("Erro ao buscar produtos:", error);
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        loadProducts();
+    }, []);
+
+    function handleAddCart(item) {
+        addItemCart(item);
     }
 
     return (
@@ -46,32 +45,33 @@ export default function Home() {
             <View style={styles.cartContent}>
                 <Text style={styles.title}>Lista de Produtos</Text>
 
-                <TouchableOpacity style={styles.cartButton}
+                <TouchableOpacity
+                    style={styles.cartButton}
                     onPress={() => navigation.navigate("Cart")}
                 >
-                {
-                    cart.length >= 1 && (
-                            <View style={styles.dot}>
-                                <Text style={styles.dotText}>
-                                    {cart?.length}
-                                </Text>
-                            </View>
-                    )
-                }
+                    {cart.length >= 1 && (
+                        <View style={styles.dot}>
+                            <Text style={styles.dotText}>{cart.length}</Text>
+                        </View>
+                    )}
                     <FontAwesome name="shopping-cart" size={30} color="#000" />
                 </TouchableOpacity>
             </View>
 
-            <FlatList
-                style={styles.item}
-                data={products}
-                keyExtractor={(item) => String(item.id)}
-                renderItem={({ item }) => <Products data={item} addToCart={() => handleAddCart(item)} />}
-                
-            />
-
+            {loading ? (
+                <ActivityIndicator size="large" color="#000" />
+            ) : (
+                <FlatList
+                    style={styles.item}
+                    data={products}
+                    keyExtractor={item => item.id}
+                    renderItem={({ item }) => (
+                        <Products data={item} addToCart={() => handleAddCart(item)} />
+                    )}
+                />
+            )}
         </SafeAreaView>
-    )
+    );
 }
 
 const styles = StyleSheet.create({
@@ -105,7 +105,13 @@ const styles = StyleSheet.create({
         left: -4
     },
     dotText: {
-        fontSize: 12
+        fontSize: 12,
+        color: "#FFF"
+    },
+    cartButton: {
+        position: "relative"
+    },
+    item: {
+        marginBottom: 20
     }
-
-})
+});

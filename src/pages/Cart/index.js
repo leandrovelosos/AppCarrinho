@@ -11,7 +11,9 @@ export default function Cart() {
                 data={cart}
                 showsVerticalScrollIndicator={false}
                 keyExtractor={(item) => String(item.id)}
-                ListEmptyComponent={() => <View style={styles.box}><Text style={styles.cartvazio}>Carrinho Vazio</Text></View>}
+                ListEmptyComponent={() => <View style={styles.box}>
+                    <Text style={styles.cartvazio}>Carrinho Vazio</Text>
+                    </View>}
                 renderItem={({ item }) => (
                     <CardItem
                         data={item}
@@ -21,7 +23,9 @@ export default function Cart() {
                 )}
                 ListFooterComponent={() =>
                     cart.length > 0 ? (
-                        <View style={styles.box}><Text style={styles.total}>Total: R$ {total}</Text></View>
+                        <View style={styles.box}>
+                            <Text style={styles.total}>Total: R$ {total}</Text>
+                        </View>
                     ) : null
                 }
             />

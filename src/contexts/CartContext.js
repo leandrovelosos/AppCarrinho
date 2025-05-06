@@ -10,54 +10,66 @@ function CartProvider({ children }) {
         const indexItem = cart.findIndex(item => item.id === newItem.id)
 
         if (indexItem !== -1) {
+            const updatedCart = cart.map((item, index) => {
+                if (index === indexItem) {
+                    const newAmount = item.amount + 1;
+                    return {
+                        ...item,
+                        amount: newAmount,
+                        total: newAmount * item.price,
+                    };
+                }
+                return item;
+            });
 
-            let cartList = cart;
-            cartList[indexItem].amount = cartList[indexItem].amount + 1;
-
-            cartList[indexItem].total = cartList[indexItem].amount * cartList[indexItem].price;
-
-            setCart(cartList)
-            totalResultCart(cartList);
-
+            setCart(updatedCart);
+            totalResultCart(updatedCart);
             return;
-
         }
 
-        let data = {
+        const data = {
             ...newItem,
             amount: 1,
             total: newItem.price
-        }
+        };
 
-        setCart(products => [...products, data])
-
-        totalResultCart([...cart, data])
+        const newCart = [...cart, data];
+        setCart(newCart);
+        totalResultCart(newCart);
 
     }
 
     function removeItemCart(product) {
-        const indexItem = cart.findIndex(item => item.id === product.id)
+        const indexItem = cart.findIndex(item => item.id === product.id);
 
         if (cart[indexItem]?.amount > 1) {
-            let cartList = cart;
-            cartList[indexItem].amount = cartList[indexItem].amount - 1;
-            cartList[indexItem].total = cartList[indexItem].total - cartList[indexItem].price;
+            const updatedCart = cart.map((item, index) => {
+                if (index === indexItem) {
+                    const newAmount = item.amount - 1;
+                    return {
+                        ...item,
+                        amount: newAmount,
+                        total: newAmount * item.price,
+                    };
+                }
+                return item;
+            });
 
-            setCart(cartList);
-            totalResultCart(cartList);
+            setCart(updatedCart);
+            totalResultCart(updatedCart);
             return;
         }
 
-        const removeItem = cart.filter(item => item.id !== product.id)
-        setCart(removeItem);
-        totalResultCart(removeItem);
+        const newCart = cart.filter(item => item.id !== product.id);
+        setCart(newCart);
+        totalResultCart(newCart);
     }
 
     function totalResultCart(items) {
         let myCart = items;
         let result = myCart.reduce((acc, obj) => { return acc + obj.total }, 0)
 
-        setTotal(result.toFixed (2));
+        setTotal(result.toFixed(2));
     }
 
     return (
